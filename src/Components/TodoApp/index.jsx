@@ -1,24 +1,24 @@
-import React, {useState, useEffect} from 'react';
-import TodoForm from './TodoForm';
-import TodoList from './TodoList';
+import React, { useState, useEffect } from "react";
+import TodoForm from "./TodoForm";
+import TodoList from "./TodoList";
 
 const TodoApp = () => {
   const [todos, setTodos] = useState([]);
-  
+
   //useEffect to load storaged todos
   useEffect(() => {
-    const getTodos = JSON.parse(localStorage.getItem('ReactMyTodos'));
-    (getTodos) && setTodos([...getTodos]);
+    const getTodos = JSON.parse(localStorage.getItem("ReactMyTodos"));
+    getTodos && setTodos([...getTodos]);
   }, []);
 
   //useEffect to update todos on changes
   useEffect(() => {
-    localStorage.setItem('ReactMyTodos', JSON.stringify(todos));
+    localStorage.setItem("ReactMyTodos", JSON.stringify(todos));
   }, [todos]);
 
   //Create todo function
   function createTodo(todo) {
-    let newTodo = {id: new Date().getTime(), todo, state: false };
+    let newTodo = { id: new Date().getTime(), todo, state: false };
     setTodos([newTodo, ...todos]);
   }
 
@@ -38,7 +38,11 @@ const TodoApp = () => {
   return (
     <div className="section mt-5 pt-0">
       <TodoForm createTodo={createTodo} />
-      <TodoList todos={todos} deleteTodo={deleteTodo} updateTodos={updateTodos} />
+      <TodoList
+        todos={todos}
+        deleteTodo={deleteTodo}
+        updateTodos={updateTodos}
+      />
       {/*<FilterButtons />*/}
     </div>
   );
