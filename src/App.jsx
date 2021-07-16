@@ -1,4 +1,5 @@
 import "bulma/css/bulma.min.css";
+import "./style.css";
 import TodoApp from "./Components/TodoApp";
 
 export default function App() {
