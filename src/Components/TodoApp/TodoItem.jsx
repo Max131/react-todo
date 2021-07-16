@@ -13,7 +13,7 @@ const TodoItem = ({ todo, index, deleteTodo, updateTodos }) => {
   return (
     <li
       className={
-        todo.state
+        todo.status
           ? "notification mb-1 is-success"
           : "notification mb-1 is-light"
       }
