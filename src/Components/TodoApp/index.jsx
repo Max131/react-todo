@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import useFetch from '../../Hooks/useFetch';
 import TodoForm from "./TodoForm";
 import TodoList from "./TodoList";
+import Loader from "../Loader";
 
 const TodoApp = () => {
   const [todos, setTodos] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [todoAction, setTodoAction] = useState({
     type: null,
     todo: {}
@@ -22,8 +23,9 @@ const TodoApp = () => {
                     },
                     credentials: "same-origin"})
                   .then(res => res.json())
-                  .then(data => setTodos([...data]))
+                  .then(data => setTodos([...data].reverse()))
                   .catch(error => console.log(error.message));
+                  setLoading(false);
                   }
     getTodos();
   }, []);
@@ -35,18 +37,28 @@ const TodoApp = () => {
       update: 'PUT',
       delete: 'DELETE'
     }
-    /*switch (todoAction.type){
-      case 'new':
-        console.log('New todo', todoAction);
-        break;
-      case 'update':
-        console.log('Update todo', todoAction);
-        break;
-      case 'delete':
-        console.log('Delete todo', todoAction);
-        break;
-    }*/
-    useFetch({type: fetchType[todoAction.type], url: 'https://example.com', data: todoAction.todo});
+    const url = `https://todos-9a65.restdb.io/rest/todos${(todoAction.type !== 'POST')? '/' + todoAction.todo["_id"] : ''}`;
+    const api_key = "60f158b149cd3a5cfbd2291f";
+    const fetchData = async () => {
+        setLoading(true);
+        /* START_FETCH */
+        await fetch(url, {
+                      method: fetchType[todoAction.type],
+                      headers: {
+                        "x-apikey": api_key,
+                        "cache-control": "no-cache",
+                        "content-type": "application/json",
+                      },
+                      body: JSON.stringify(todoAction.todo),
+                      credentials: "same-origin"})
+                    .then(res => res.json())
+                    .then(data => console.log(data))
+                    .catch(error => console.log(error));
+        setLoading(false);
+    }
+    (todoAction.type) && fetchData();
+    /* END_FETCH */
+
     setTodoAction({type: null, todo: {}});
   }, [todos]);
 
@@ -69,12 +81,13 @@ const TodoApp = () => {
   function deleteTodo(id) {
     const filteredTodos = todos.filter((todo, index) => index !== id);
     const deleteTodo = todos.filter((todo, index) => index === id);
-    setTodoAction({type: 'delete', todo: {...deleteTodo}});
+    setTodoAction({type: 'delete', todo: {...deleteTodo[0]}});
     setTodos([...filteredTodos]);
   }
 
   return (
     <div className="section mt-5 pt-0">
+      {(loading) && <Loader />}
       <TodoForm createTodo={createTodo} />
       <TodoList
         todos={todos}
